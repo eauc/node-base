@@ -1,0 +1,14 @@
+:base = http://localhost:3000
+:base_headers = Content-Type: application/json
+
+# Root
+GET :base
+:base_headers
+
+# API v1
+GET :base/v1
+:base_headers
+
+# All accounts
+GET :base/v1/accounts
+:base_headers

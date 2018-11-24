@@ -1,0 +1,90 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "API Description",
+    "version": "1.0.0",
+    "title": "Swagger API"
+  },
+  "tags": [],
+  "paths": {
+    "/v1/accounts": {
+      "get": {
+        "summary": "Get all accounts",
+        "tags": [],
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AllAccountsResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "parameters": {},
+  "definitions": {
+    "ApiResponse": {
+      "type": "object",
+      "required": [
+        "status",
+        "messages"
+      ],
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AllAccountsResponse": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/ApiResponse"
+        },
+        {
+          "type": "object",
+          "required": [
+            "accounts"
+            ],
+          "properties": {
+            "accounts": {
+              "$ref": "#/definitions/AccountsDictionnary"
+            }
+          }
+        }
+      ]
+    },
+    "AccountsDictionnary": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/Account"
+      }
+    },
+    "Account": {
+      "type": "object",
+      "required": [
+        "description",
+        "id"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 3
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,121 @@
+* Base node API
+
+** Code organisation
+
+All the app's source code is in directory [[./src]]
+
+Source folder constains main files:
+- [[./src/index.js]] starts server.
+- [[./src/app.js]] starts server.
+- [[./src/config.js]] load the config using =conscript=.
+- [[./src/logger.js]] initialize logger.
+
+The app itself is in the [[./app]] directory:
+- [[./src/libs]] contains various librairies configuration.
+- [[./src/middlewares]] contains various express middlewares initialization.
+- [[./src/routes]] contains the REST api's routes.
+- [[./src/schemas]] contains the DB schemas.
+- [[./src/services]] contains the domain code base.
+
+** Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+
+*** Prerequisites
+
+- docker & docker-compose
+
+*** Installing
+
+Build the local docker image from the [[./Dockerfile][Dockerfile]].
+#+BEGIN_SRC sh
+docker build -t api:dev .
+#+END_SRC
+
+OR
+
+You can run a local server with docker-compose.
+#+BEGIN_SRC sh
+docker-compose up --build
+#+END_SRC
+
+** Running the tests
+
+From the docker image
+#+BEGIN_SRC sh
+docker run -it --rm --name api-tests api:dev npm t
+# OR
+docker run -it --rm --name api-tests api:dev npm t -- --watchAll
+#+END_SRC
+
+Or with a running docker-compose instance
+#+BEGIN_SRC sh
+docker exec -it api npm t
+# OR
+docker exec -it api npm t -- --watchAll
+#+END_SRC
+
+*** Checking Codestyle
+
+From the docker image
+#+BEGIN_SRC sh
+docker run -it --rm --name api-lint api:dev npm run lint
+#+END_SRC
+
+#+BEGIN_SRC sh
+docker exec -it api npm run lint
+#+END_SRC
+
+The rules are defined in the [[./.eslintrc.js][eslintrc]] file.
+
+** Logs
+
+The servers logs raw JSON on the standard output.
+
+You can filter it using [[https://stedolan.github.io/jq/][jq]]. Eg to see all the warnings:
+#+BEGIN_SRC sh
+docker logs api | grep '^{' | jq -cM 'select(.level == 40)'
+#+END_SRC
+
+If you want to see a nicely formatted output, you can pipe it through the logging tool Pino.js:
+#+BEGIN_SRC sh
+docker logs api | grep '^{' | jq -cM 'select(.level == 40)' | npx pino
+#+END_SRC
+
+** API
+
+The server exposes:
+- =/v1= the main REST api.
+- =/v1/docs= the Swagger documentation.
+- =/monitoring/[ui|stats|metrics]= the monitoring tools.
+
+The REST api is documented in [[./src/routes/v1/swagger.json]].
+
+This swagger file is used :
+- to validate requests bodies in the API routes (using Ajv schema's validation).
+- to validate requests made during the tests of the API (using hippie-swagger).
+- to document the api at =/docs/v1=.
+
+** Database
+
+*** Schemas
+
+The App use [[https://mongoosejs.com/docs/guide.html][mongoose]] to access the MongoDB. Schemas are found in [[./src/schemas]] directory.
+Look in here to have a quick overview of documents in the DB.
+
+*** Migrations
+
+Migrations are used to create/delete data in memory. The tool used is [[https://github.com/balmasi/migrate-mongoose][migrate-mongoose]].
+Migrations files are stored in [[./migrations]] directory.
+Each migration file is responsible for the creation and deletions of a set of documents in the DB.
+See [[./migrations/1537530111812-basic_demo.js][1537530111812-basic_demo.js]] for an example used to create the defaults objetcs for a demo.
+
+Create demo objects in DB with:
+#+BEGIN_SRC sh
+./node_modules/.bin/migrate up basic_demo -d mongodb://<mongo-host:port>/<db-name>
+#+END_SRC
+
+Delete demo objects in DB with:
+#+BEGIN_SRC sh
+./node_modules/.bin/migrate down basic_demo -d mongodb://<mongo-host:port>/<db-name>
+#+END_SRC

@@ -1,0 +1,31 @@
+version: "3"
+services:
+  api:
+    container_name: api
+    build: .
+    restart: always
+    links:
+      - db
+      - test-db
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    command: npm run dev
+    volumes:
+      - ./:/app
+      - /app/node_modules
+  db:
+    container_name: db
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - data-db:/data/db
+  test-db:
+    container_name: test-db
+    image: mongo
+    ports:
+      - "27018:27017"
+volumes:
+  data-db:
