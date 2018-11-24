@@ -43,7 +43,6 @@
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0",
     "eslint-plugin-jest": "^21.17.0",
-    "eslint-plugin-node": "^8.0.0",
     "hippie-swagger": "^3.2.0",
     "husky": "^1.2.0",
     "jest": "^23.5.0",
